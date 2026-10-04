@@ -30,7 +30,7 @@ int main() {
    * Basic ASIO Network Setup:
    * - io_context: The main background engine.
    * - resolver: Translates domain names to IP addresses.
-   * - socket: The "cable" connecting us to the server.
+   * - socket: The "cable" connecting us to the remote server.
    * - endpoint: The IP and Port we want to connect to.
    */
   asio::io_context io_context;
