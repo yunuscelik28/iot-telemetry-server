@@ -1,19 +1,19 @@
 # IoT Telemetry Server & Client Project
 
-Hello! This is my C++ project where I built an asynchronous TCP server and a client to simulate IoT telemetry data collection. I developed this project to learn about modern C++ concepts and network programming.
+Hi there! Here is my C++ project where I implemented an asynchronous TCP server and a client to process IoT telemetry. I've created this project as a part of learning new C++ features and network programming.
 
-## What I Learned and Used
+## What I Learnt and Used
 
-- **Asynchronous Architecture:** I used standalone `ASIO` to create a non-blocking server. It can handle multiple client connections simultaneously without freezing.
-- **Thread Safety:** I used `std::mutex` and `std::lock_guard` to prevent race conditions when different clients send data at the same time and try to write to the central storage.
-- **Memory Management:** I learned how to use smart pointers (`std::shared_ptr`, `std::enable_shared_from_this`) to safely manage client session lifecycles.
-- **JSON Serialization:** I used the `nlohmann/json` library to easily convert simulated hardware data into JSON strings and parse them back into C++ objects.
-- **Separation of Concerns:** I structured my project into separate header (`.hpp`) and source (`.cpp`) files for better code organization.
+- **Asynchronous Design Pattern**: I've utilized standalone `ASIO` framework to build non-blocking server. It can deal with many clients' connections without blocking execution.
+- **Concurrency Issues**: I've used `std::mutex` and `std::lock_guard` to ensure safe data write to the central storage by avoiding race condition in case multiple clients will try to store their data at once.
+- **Smart Pointers**: I've learnt how to properly use `std::shared_ptr` and `std::enable_shared_from_this` to implement lifecycle management of the client session.
+- **JSON Serialization**: I've used the `nlohmann/json` library to serialize the simulated hardware data and store it as JSON object in order to easily deserialize and use in C++.
+- **Encapsulation and Separation of Concerns**: I've organized the source code into separate header (`*.hpp`) and implementation (`*.cpp`) files.
 
 ## Project Structure
 
-- **Client (`mclient`)**: Simulates an IoT sensor. It generates random temperature and speed data, converts it to JSON, and sends it to the server.
-- **Server (`mserver`)**: An async server that accepts client connections, parses the JSON data, and safely stores it in a central map using a mutex lock.
+- **Client (`mclient`)**: Implements an IoT device. Generates random temperature and speed values, then creates JSON message out of these values and sends to the server.
+- **Server (`mserver`)**: Async server which accepts connections from clients, parses JSON messages and securely stores them into the central map using mutex lock.
 
 ## How to Run
 
