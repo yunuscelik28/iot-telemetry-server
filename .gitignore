@@ -19,3 +19,6 @@ compile_commands.json
 *.exe
 mserver
 mclient
+
+# Generated Data
+*.csv
