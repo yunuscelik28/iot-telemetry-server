@@ -8,8 +8,12 @@
 #include <memory>
 #include <string>
 
-// Represents a single client connection
-// We use enable_shared_from_this to keep it alive during async operations
+/*
+ * Session Class:
+ * Represents one connection with a client.
+ * Inherits enable_shared_from_this so it doesn't destroy itself too early.
+ * - do_read(): Reads data until '\n', parses JSON, and saves it to the map using a mutex.
+ */
 class Session : public std::enable_shared_from_this<Session> {
 private:
   asio::ip::tcp::socket socket_;
