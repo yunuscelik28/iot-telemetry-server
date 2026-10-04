@@ -7,12 +7,8 @@
 #include <mutex>
 #include <string>
 
-/*
- * Server Class:
- * The main listener waiting for clients.
- * It holds the unordered_map (data storage) and mutex (for thread safety).
- * - do_accept(): Waits for clients. When one arrives, it creates a new Session.
- */
+// The main server class that listens for incoming connections
+// It holds the central data map and a mutex to keep it thread-safe
 class Server {
 private:
   asio::ip::tcp::acceptor acceptor_;

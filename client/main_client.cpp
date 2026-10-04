@@ -26,13 +26,8 @@ int main() {
   uniform_real_distribution<float> dist(20.0, 30.0);
   uniform_real_distribution<float> speed_dist(60.0, 120.0);
 
-  /*
-   * Basic ASIO Network Setup:
-   * - io_context: The main background engine.
-   * - resolver: Translates domain names to IP addresses.
-   * - socket: The "cable" connecting us to the server.
-   * - endpoint: The IP and Port we want to connect to.
-   */
+  // Setup ASIO networking stuff
+  // io_context is the core engine, socket connects to our server
   asio::io_context io_context;
   tcp::resolver resolver(io_context);
   tcp::socket socket(io_context);

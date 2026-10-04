@@ -8,12 +8,9 @@ int main() {
   // Server configuration
   const short SERVER_PORT = 8080;
 
-  /*
-   * Async Server Setup:
-   * - io_context: The main background engine.
-   * - Server: My custom class that listens on the port.
-   * - run(): Starts the loop to process tasks without freezing.
-   */
+  // Setup the async server
+  // io_context handles the background tasks
+  // run() keeps the program alive and listening
   try {
     asio::io_context io_context;
     Server s(io_context, SERVER_PORT);
