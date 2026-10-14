@@ -17,6 +17,9 @@ target_include_directories(mclient PRIVATE
     ${CMAKE_SOURCE_DIR}/external
 )
 
+target_compile_definitions(mserver PRIVATE ASIO_STANDALONE)
+target_compile_definitions(mclient PRIVATE ASIO_STANDALONE)
+
 # Include necessary libraries (threads) for the project
 find_package(Threads REQUIRED)
 
@@ -27,4 +30,7 @@ target_link_libraries(mclient PRIVATE Threads::Threads)
 if(WIN32)
     target_link_libraries(mserver PRIVATE ws2_32 wsock32)
     target_link_libraries(mclient PRIVATE ws2_32 wsock32)
+
+    target_compile_definitions(mserver PRIVATE _WIN32_WINNT=0x0A00)
+    target_compile_definitions(mclient PRIVATE _WIN32_WINNT=0x0A00)
 endif()

@@ -1,4 +1,3 @@
-#define ASIO_STANDALONE
 #include "asio.hpp"
 #include "asio/io_context.hpp"
 #include "asio/ip/address.hpp"

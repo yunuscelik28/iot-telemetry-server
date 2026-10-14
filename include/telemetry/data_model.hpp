@@ -1,13 +1,12 @@
 #pragma once
 #include <string>
 
-#include "../../external/json.hpp"
+#include "json.hpp"
 
-using namespace std;
 namespace telemetry {
 
 struct TelemetryPacket {
-  string device_id;
+  std::string device_id;
   long long timestamp;
   float temperature;
   float speed;

@@ -1,11 +1,10 @@
-#include "asio/signal_set.hpp"
-#include <csignal>
-#include <system_error>
-#define ASIO_STANDALONE
 #include "asio.hpp"
+#include "asio/signal_set.hpp"
 #include "telemetry/server.hpp"
+#include <csignal>
 #include <exception>
 #include <iostream>
+#include <system_error>
 
 using namespace std;
 
