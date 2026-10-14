@@ -1,6 +1,5 @@
 #pragma once
 
-#define ASIO_STANDALONE
 #include "asio.hpp"
 #include "telemetry/data_model.hpp"
 #include <mutex>
@@ -8,23 +7,25 @@
 #include <unordered_map>
 
 /*
- * Server Class:
- * The main listener waiting for clients.
- * It holds the unordered_map (data storage) and mutex (for thread safety).
- * - do_accept(): Waits for clients. When one arrives, it creates a new Session.
- * - ~Server(): Destructor that locks the data and exports everything to
- * Report.csv before shutting down.
+ * Server class
+ * Listens on a port and waits for clients.
+ * Keeps the last packet of every device in a map (key = device_id).
+ * - do_accept(): waits for a client, makes a new Session for it,
+ *   then calls itself again to wait for the next one.
+ * - ~Server(): when the server is closing, writes the map to Report.csv
  */
 class Server {
 private:
   asio::ip::tcp::acceptor acceptor_;
-  std::unordered_map<std::string, telemetry::TelemetryPacket> um;
-  std::mutex mtx;
+  std::unordered_map<std::string, telemetry::TelemetryPacket> device_map;
+  // io_context runs on one thread for now so this isn't really needed yet,
+  // but I'll need it when I try running io_context on multiple threads
+  std::mutex map_mutex;
 
   void do_accept();
 
 public:
-  Server(asio::io_context &io_context, short port);
+  Server(asio::io_context &io_context, unsigned short port);
 
   ~Server();
 };

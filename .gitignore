@@ -10,6 +10,7 @@ compile_commands.json
 .vscode/
 .vs/
 .idea/
+.cache/
 *.sln
 *.vcxproj
 *.vcxproj.filters
