@@ -1,5 +1,4 @@
 #include "telemetry/session.hpp"
-#include "asio/error.hpp"
 #include "json.hpp"
 #include <iostream>
 #include <istream>
@@ -10,44 +9,53 @@ using namespace nlohmann;
 Session::Session(asio::ip::tcp::socket socket,
                  unordered_map<string, telemetry::TelemetryPacket> &map,
                  mutex &mutex)
-    : socket_(std::move(socket)), receiving_data(MAX_MESSAGE_SIZE), um_rf(map),
-      mtx_rf(mutex) {}
+    : socket_(std::move(socket)), read_buffer(MAX_MESSAGE_SIZE),
+      device_map(map), map_mutex(mutex) {}
 
 void Session::start() { do_read(); }
 
 void Session::do_read() {
+  // keep a shared_ptr in the lambda so the Session lives until it's called
   auto self(shared_from_this());
   asio::async_read_until(
-      socket_, receiving_data, "\n",
-      [this, self](asio::error_code er, size_t length) {
-        if (!er) {
-          istream is(&receiving_data);
-          string data;
-          getline(is, data);
+      socket_, read_buffer, "\n",
+      // second parameter is the byte count, I don't use it so no name
+      [this, self](asio::error_code error, size_t) {
+        if (!error) {
+          istream stream(&read_buffer);
+          string line;
+          getline(stream, line);
           try {
-            // Try to parse the incoming string as JSON
-            json myjson = json::parse(data);
-            telemetry::TelemetryPacket myTel = myjson;
-            cout << "Received temp: " << myTel.temperature << "\n";
+            json parsed = json::parse(line);
+            telemetry::TelemetryPacket packet = parsed;
+            cout << "Device id: " << packet.device_id
+                 << ", temp: " << packet.temperature
+                 << ", speed: " << packet.speed << "\n";
 
-            // Lock the map so multiple clients don't crash the server when
-            // writing
-            lock_guard<mutex> lock(mtx_rf);
-            um_rf[myTel.device_id] = myTel;
-            cout << "Total devices connected: " << um_rf.size() << "\n";
+            lock_guard<mutex> lock(map_mutex);
+            device_map[packet.device_id] = packet;
+            cout << "Known devices: " << device_map.size() << "\n";
           } catch (const json::exception &e) {
-            // If bad data (not JSON) comes in, don't crash! Just print and
-            // ignore.
+            // json::exception is the base class of all nlohmann errors, so
+            // this catches broken JSON (parse_error) and also missing fields
+            // (out_of_range) or wrong types (type_error).
+            // Before, I only caught parse_error and a packet with a missing
+            // field crashed the whole server.
             cout << e.what() << "\n";
           }
 
-          do_read();
+          do_read(); // read the next line
+        } else if (error == asio::error::eof) {
+          // client closed the connection normally
+          cout << "Client disconnected\n";
+        } else if (error == asio::error::not_found) {
+          // buffer got full before a '\n' came
+          cerr << "Message too long (limit " << MAX_MESSAGE_SIZE
+               << " bytes), closing connection\n";
         } else {
-          if (er == asio::error::eof) {
-            cout << "Client disconnected\n";
-          } else {
-            std::cerr << "Reading error: " << er.message() << '\n';
-          }
+          cerr << "Reading error: " << error.message() << "\n";
         }
+        // in the error cases we don't call do_read() again, so the Session
+        // is destroyed and the socket closes by itself
       });
 }
